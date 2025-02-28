@@ -37,6 +37,10 @@ function App() {
   const handleClick = () => {
     fileInputRef.current.click()
   }
+
+  const handleDelete = (indexToDelete) => {
+    setImages(prev => prev.filter((_, index) => index !== indexToDelete))
+  }
   
   return (
     <div className="container">
@@ -63,6 +67,13 @@ function App() {
         {images.map((image, index) => (
           <div key={index} className="image-container">
             <img src={image} alt={`Зображення ${index + 1}`} />
+            <button 
+              className="delete-button"
+              onClick={() => handleDelete(index)}
+              title="Видалити зображення"
+            >
+              ✕
+            </button>
           </div>
         ))}
       </div>
