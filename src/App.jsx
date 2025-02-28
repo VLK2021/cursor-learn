@@ -1,34 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useRef } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [images, setImages] = useState([])
+  const fileInputRef = useRef(null)
+  
+  const handleDrop = (e) => {
+    e.preventDefault()
+    const files = e.dataTransfer.files
+    handleFiles(files)
+  }
 
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const handleFileInput = (e) => {
+    const files = e.target.files
+    handleFiles(files)
+  }
+
+  const handleFiles = (files) => {
+    const validImageFiles = Array.from(files).filter(file => 
+      file.type.startsWith('image/')
+    )
+
+    validImageFiles.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImages(prev => [...prev, e.target.result])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const handleClick = () => {
+    fileInputRef.current.click()
+  }
+  
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <h1>Завантаження зображень</h1>
+      
+      <div 
+        className="drop-zone"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={handleClick}
+      >
+        <p>Натисніть тут або перетягніть зображення для завантаження</p>
+        <input 
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileInput}
+          accept="image/*"
+          multiple
+          style={{ display: 'none' }}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      <div className="image-grid">
+        {images.map((image, index) => (
+          <div key={index} className="image-container">
+            <img src={image} alt={`Зображення ${index + 1}`} />
+          </div>
+        ))}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
