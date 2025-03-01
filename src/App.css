@@ -54,6 +54,16 @@ h1 {
   font-size: 1.1rem;
 }
 
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

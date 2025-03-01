@@ -11,10 +11,13 @@ const Register = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Attempting registration with auth:', auth); // Debugging
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Registration successful:', userCredential.user); // Debugging
       setError('');
       if (onSuccess) onSuccess();
     } catch (err) {
+      console.error('Registration error:', err); // Debugging
       setError(err.message);
     }
   };
@@ -42,6 +45,7 @@ const Register = ({ onSuccess }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength="6"
           />
         </div>
         <button type="submit" className="auth-button">Зареєструватися</button>
