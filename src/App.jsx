@@ -1,10 +1,23 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { auth } from './firebase'
+import Login from './components/Login'
+import Register from './components/Register'
 import './App.css'
 
 function App() {
   const [images, setImages] = useState([])
+  const [user, setUser] = useState(null)
+  const [isRegistering, setIsRegistering] = useState(false)
   const fileInputRef = useRef(null)
   
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user)
+    })
+    return () => unsubscribe()
+  }, [])
+
   const handleDrop = (e) => {
     e.preventDefault()
     const files = e.dataTransfer.files
@@ -41,10 +54,50 @@ function App() {
   const handleDelete = (indexToDelete) => {
     setImages(prev => prev.filter((_, index) => index !== indexToDelete))
   }
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+    } catch (error) {
+      console.error('Помилка при виході:', error)
+    }
+  }
   
+  if (!user) {
+    return (
+      <div className="container">
+        <h1>Фотогалерея</h1>
+        {isRegistering ? (
+          <>
+            <Register onSuccess={() => setIsRegistering(false)} />
+            <div className="auth-toggle">
+              <button onClick={() => setIsRegistering(false)}>
+                Вже маєте акаунт? Увійдіть
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <Login onSuccess={() => {}} />
+            <div className="auth-toggle">
+              <button onClick={() => setIsRegistering(true)}>
+                Немає акаунту? Зареєструйтесь
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="container">
-      <h1>Завантаження зображень</h1>
+      <div className="header">
+        <h1>Завантаження зображень</h1>
+        <button onClick={handleLogout} className="logout-button">
+          Вийти
+        </button>
+      </div>
       
       <div 
         className="drop-zone"
